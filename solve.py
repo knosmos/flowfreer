@@ -25,36 +25,44 @@ colors = [41, 42, 43, 44, 45, 46, 47] # red, green, yellow, blue, magenta, cyan,
 
 def solve(puzzle, endpoints):
     # find most constrained color
+    # most_constrained = -1
+    # most_constrained_count = float("inf")
+    # for i, (start, end, color) in enumerate(endpoints):
+    #     neighbors = get_neighbors(start)
+    #     open_squares = 0
+    #     for neighbor in neighbors:
+    #         if neighbor[0] < 0 or neighbor[0] >= len(puzzle) or neighbor[1] < 0 or neighbor[1] >= len(puzzle[0]):
+    #             continue
+    #         if puzzle[neighbor[0]][neighbor[1]] == 5:
+    #             open_squares += 1
+    #     if open_squares < most_constrained_count:
+    #         most_constrained_count = open_squares
+    #         most_constrained = i
+    most_constrained = 0
+
     # rfn through all possible moves
     render(puzzle)
     # test solvability for remaining colors
     if not dfs_test(puzzle, endpoints):
-        print("partition check failed")
+        print("partition check failed             ")
         return
     # test fillability of remaining squares
-    if not empty_test(puzzle, endpoints):
-        print("empty test failed")
+    if not empty_test3(puzzle, endpoints):
+        print("empty test failed                  ")
         return
 
     # make next move
-    start, end, color = endpoints[0]
-    nxts = [
-        (start[0] + 1, start[1]), # down
-        (start[0] - 1, start[1]), # up
-        (start[0], start[1] + 1), # right
-        (start[0], start[1] - 1), # left
-    ]
+    start, end, color = endpoints[most_constrained]
+    nxts = get_neighbors(start)
+    end_reachable_flag = end in nxts
     for i, nxt in enumerate(nxts):
+        if end_reachable_flag and nxt != end:
+            continue
         if nxt[0] < 0 or nxt[0] >= len(puzzle) or nxt[1] < 0 or nxt[1] >= len(puzzle[0]):
             continue
         if puzzle[nxt[0]][nxt[1]] != 5 and nxt != end:
             continue
-        new_cell_neighbors = [
-            (nxt[0] + 1, nxt[1]), # down
-            (nxt[0] - 1, nxt[1]), # up
-            (nxt[0], nxt[1] + 1), # right
-            (nxt[0], nxt[1] - 1), # left
-        ]
+        new_cell_neighbors = get_neighbors(nxt)
         for neighbor in new_cell_neighbors:
             if neighbor == start or neighbor == end:
                 continue
@@ -66,21 +74,33 @@ def solve(puzzle, endpoints):
             original_endpoint_flag = puzzle[start[0]][start[1]] % len(mapping) == 4
             if not original_endpoint_flag:
                 puzzle[start[0]][start[1]] = color * len(mapping) + i
+            if puzzle[nxt[0]][nxt[1]] == 5:
+                puzzle[nxt[0]][nxt[1]] = color * len(mapping) + i
             if nxt == end:
                 # move to next color
                 print("found end", nxt, end, color)
-                new_endpoints = endpoints[1:]
+                new_endpoints = endpoints[:most_constrained] + endpoints[most_constrained + 1:]
                 if len(new_endpoints) == 0:
                     print("solved")
                     render(puzzle)
                     sys.exit(0)
                 solve(puzzle, new_endpoints)
             else:
-                endpoints[0] = (nxt, end, color)
+                endpoints[most_constrained] = (nxt, end, color)
                 solve(puzzle, endpoints)
-                endpoints[0] = (start, end, color)
+                endpoints[most_constrained] = (start, end, color)
             if not original_endpoint_flag:
                 puzzle[start[0]][start[1]] = 5
+            if puzzle[nxt[0]][nxt[1]] == color * len(mapping) + i:
+                puzzle[nxt[0]][nxt[1]] = 5
+
+def get_neighbors(cell):
+    return [
+        (cell[0] + 1, cell[1]), # down
+        (cell[0] - 1, cell[1]), # up
+        (cell[0], cell[1] + 1), # right
+        (cell[0], cell[1] - 1), # left
+    ]
 
 def dfs_test(puzzle, endpoints):
     for start, end, color in endpoints:
@@ -92,12 +112,7 @@ def dfs_test(puzzle, endpoints):
                 break
             visited.add(curr)
             # check all possible moves
-            nxts = [
-                (curr[0] + 1, curr[1]), # down
-                (curr[0] - 1, curr[1]), # up
-                (curr[0], curr[1] + 1), # right
-                (curr[0], curr[1] - 1), # left
-            ]
+            nxts = get_neighbors(curr)
             for nxt in nxts:
                 if nxt[0] < 0 or nxt[0] >= len(puzzle) or nxt[1] < 0 or nxt[1] >= len(puzzle[0]):
                     continue
@@ -121,12 +136,7 @@ def empty_test(puzzle, endpoints):
             continue
         visited.add(curr)
         # check all possible moves
-        nxts = [
-            (curr[0] + 1, curr[1]), # down
-            (curr[0] - 1, curr[1]), # up
-            (curr[0], curr[1] + 1), # right
-            (curr[0], curr[1] - 1), # left
-        ]
+        nxts = get_neighbors(curr)
         for nxt in nxts:
             if nxt[0] < 0 or nxt[0] >= len(puzzle) or nxt[1] < 0 or nxt[1] >= len(puzzle[0]):
                 continue
@@ -140,10 +150,112 @@ def empty_test(puzzle, endpoints):
                     return False
     return True
 
+def empty_test2(puzzle, endpoints):
+    # test if every empty cell is reachable from two of the same
+    # colored endpoints
+    viable = set()
+    for start, end, color in endpoints:
+        stack = [start]
+        visited = set()
+        while stack:
+            curr = stack.pop()
+            if curr in visited:
+                continue
+            visited.add(curr)
+            # check all possible moves
+            nxts = get_neighbors(curr)
+            for nxt in nxts:
+                if nxt[0] < 0 or nxt[0] >= len(puzzle) or nxt[1] < 0 or nxt[1] >= len(puzzle[0]):
+                    continue
+                if puzzle[nxt[0]][nxt[1]] != 5:
+                    continue
+                stack.append(nxt)
+        stack = [end]
+        visited2 = set()
+        while stack:
+            curr = stack.pop()
+            if curr in visited2:
+                continue
+            visited2.add(curr)
+            # check all possible moves
+            nxts = get_neighbors(curr)
+            for nxt in nxts:
+                if nxt[0] < 0 or nxt[0] >= len(puzzle) or nxt[1] < 0 or nxt[1] >= len(puzzle[0]):
+                    continue
+                if puzzle[nxt[0]][nxt[1]] != 5:
+                    continue
+                stack.append(nxt)
+        intersection = visited.intersection(visited2)
+        viable.update(intersection)
+    for i, row in enumerate(puzzle):
+        for j, cell in enumerate(row):
+            if cell == 5:
+                if (i, j) not in viable:
+                    return False
+    return True
+
+def empty_test3(puzzle, endpoints):
+    # test if every empty cell is reachable from two of the same
+    # colored endpoints
+    viable = set()
+    for start, end, color in endpoints:
+        stack = [start]
+        visited = set()
+        while stack:
+            curr = stack.pop()
+            if curr in visited:
+                continue
+            visited.add(curr)
+            # check all possible moves
+            nxts = get_neighbors(curr)
+            for nxt in nxts:
+                if nxt[0] < 0 or nxt[0] >= len(puzzle) or nxt[1] < 0 or nxt[1] >= len(puzzle[0]):
+                    continue
+                if puzzle[nxt[0]][nxt[1]] != 5:
+                    continue
+                stack.append(nxt)
+        stack = [end]
+        visited2 = set()
+        while stack:
+            curr = stack.pop()
+            if curr in visited2:
+                continue
+            visited2.add(curr)
+            # check all possible moves
+            nxts = get_neighbors(curr)
+            for nxt in nxts:
+                if nxt[0] < 0 or nxt[0] >= len(puzzle) or nxt[1] < 0 or nxt[1] >= len(puzzle[0]):
+                    continue
+                if puzzle[nxt[0]][nxt[1]] != 5:
+                    continue
+                stack.append(nxt)
+        intersection = visited.intersection(visited2)
+        viable.update(intersection)
+    endpoints_set = set()
+    for start, end, color in endpoints:
+        endpoints_set.add(start)
+        endpoints_set.add(end)
+    for i, row in enumerate(puzzle):
+        for j, cell in enumerate(row):
+            if cell == 5:
+                if (i, j) not in viable:
+                    return False
+                neighbors = get_neighbors((i, j))
+                num_empty = 0
+                for neighbor in neighbors:
+                    if neighbor[0] < 0 or neighbor[0] >= len(puzzle) or neighbor[1] < 0 or neighbor[1] >= len(puzzle[0]):
+                        continue
+                    if puzzle[neighbor[0]][neighbor[1]] == 5 or neighbor in endpoints_set:
+                        num_empty += 1
+                if num_empty < 2:
+                    return False
+    return True
+
 def clear():
     os.system('cls' if os.name == 'nt' else 'clear')
 
 def render(puzzle):
+    #clear()
     global ctr
     sys.stdout.write("\033[H")
     print("✧˖° FLOW FREER ✧˖°")
@@ -196,14 +308,14 @@ def read_input():
 
 ctr = 0
 
-# endpoints = [
-#     [(4,4),(5,7),0],
-#     [(5,2),(6,7),1],
-#     [(6,3),(1,6),2],
-#     [(4,2),(6,6),3],
-# ]
+endpoints = [
+    [(4,4),(5,7),0],
+    [(5,2),(6,7),1],
+    [(6,3),(1,6),2],
+    [(4,2),(6,6),3],
+]
 
-#puzzle = build(endpoints, 8, 8)
+puzzle = build(endpoints, 8, 8)
 endpoints, n, m = read_input()
 puzzle = build(endpoints, n, m)
 
