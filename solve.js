@@ -1,25 +1,3 @@
-const mapping = ['link dn', 'link up', 'link rt', 'link lt', 'circle', '', '']; // mod 7
-const colors = ['a', 'b', 'c', 'd', 'e', 'f', 'g', 'h', 'i']; // red, green, yellow, blue, magenta, cyan, white, grey
-let ctr = 0;
-
-function render(puzzle) {
-    let rendered = puzzle.map(row => row.map(i => {
-        if (i === 5) return 'empty';
-        let col = colors[Math.floor(i / mapping.length)];
-        let ind = mapping[i % mapping.length];
-        return `${ind} ${col}`;
-    }));
-    ctr++;
-    table.$forceUpdate();
-    return rendered;
-}
-
-function renderCell(cell) {
-    if (cell === 5) return '';
-    const col = colors[Math.floor(cell / mapping.length)];
-    return `${mapping[cell % mapping.length]} ${col}`;
-}
-
 function getNeighbors([r, c]) {
     return [[r + 1, c], [r - 1, c], [r, c + 1], [r, c - 1]];
 }
@@ -40,7 +18,7 @@ function dfsTest(puzzle, endpoints) {
             for (const nxt of getNeighbors(curr)) {
                 const [nr, nc] = nxt;
                 if (nr < 0 || nr >= puzzle.length || nc < 0 || nc >= puzzle[0].length) continue;
-                if ((puzzle[nr][nc] !== 5) && !(nr === end[0] && nc === end[1])) continue;
+                if ((puzzle[nr][nc] !== -1) && !(nr === end[0] && nc === end[1])) continue;
                 const nkey = nxt.toString();
                 if (!visited.has(nkey)) stack.push(nxt.slice());
             }
@@ -64,7 +42,7 @@ function emptyTest3(puzzle, endpoints) {
                 for (const nxt of getNeighbors(curr)) {
                     const [nr, nc] = nxt;
                     if (nr < 0 || nr >= puzzle.length || nc < 0 || nc >= puzzle[0].length) continue;
-                    if (puzzle[nr][nc] !== 5) continue;
+                    if (puzzle[nr][nc] !== -1) continue;
                     stack.push([nr, nc]);
                 }
             }
@@ -80,14 +58,14 @@ function emptyTest3(puzzle, endpoints) {
     endpoints.forEach(([s, e]) => { endpointsSet.add(s.toString()); endpointsSet.add(e.toString()); });
     for (let i = 0; i < puzzle.length; i++) {
         for (let j = 0; j < puzzle[0].length; j++) {
-            if (puzzle[i][j] === 5) {
+            if (puzzle[i][j] === -1) {
                 const key = [i, j].toString();
                 if (!viable.has(key)) return false;
                 let numEmpty = 0;
                 for (const neighbor of getNeighbors([i, j])) {
                     const [nr, nc] = neighbor;
                     if (nr < 0 || nr >= puzzle.length || nc < 0 || nc >= puzzle[0].length) continue;
-                    if (puzzle[nr][nc] === 5 || endpointsSet.has(neighbor.toString())) numEmpty++;
+                    if (puzzle[nr][nc] === -1 || endpointsSet.has(neighbor.toString())) numEmpty++;
                 }
                 if (numEmpty < 2) return false;
             }
@@ -144,7 +122,7 @@ function solve(puzzle, endpoints, prev = -1) {
         const [i, nxt] = indexed[idx];
         const [nr, nc] = nxt;
         if (nr < 0 || nr >= puzzle.length || nc < 0 || nc >= puzzle[0].length) return loop(idx + 1);
-        if (puzzle[nr][nc] !== 5 && nxt.toString() !== end.toString()) return loop(idx + 1);
+        if (puzzle[nr][nc] !== -1 && nxt.toString() !== end.toString()) return loop(idx + 1);
 
         // ensure not colliding with other endpoints
         if (endpoints.some(([s, e], idx) => idx !== mostConstrained &&
@@ -157,7 +135,7 @@ function solve(puzzle, endpoints, prev = -1) {
             if (d.toString() === start.toString() || d.toString() === end.toString()) continue;
             const [dr, dc] = d;
             if (dr < 0 || dr >= puzzle.length || dc < 0 || dc >= puzzle[0].length) continue;
-            if (Math.floor(puzzle[dr][dc] / mapping.length) === color && puzzle[dr][dc] !== 5) {
+            if (Math.floor(puzzle[dr][dc] / mapping.length) === color && puzzle[dr][dc] !== -1) {
                 conflict = true;
                 break;
             }
@@ -168,15 +146,17 @@ function solve(puzzle, endpoints, prev = -1) {
         endpoints = structuredClone(endpoints);
         const origEndpoint = (puzzle[start[0]][start[1]] % mapping.length) === 4;
         if (!origEndpoint) puzzle[start[0]][start[1]] = color * mapping.length + i;
-        if (puzzle[nr][nc] === 5) puzzle[nr][nc] = color * mapping.length + i;
+        else puzzle[start[0]][start[1]] = color * mapping.length + 5 + i;
+        if (puzzle[nr][nc] === -1) puzzle[nr][nc] = color * mapping.length + i;
 
         endpoints[mostConstrained] = [nxt, end, color];
         setTimeout(() => {
             if (solve(puzzle, endpoints, i)) return true;
             endpoints[mostConstrained] = [start, end, color];
 
-            if (!origEndpoint) puzzle[start[0]][start[1]] = 5;
-            if (puzzle[nr][nc] === color * mapping.length + i) puzzle[nr][nc] = 5;
+            if (!origEndpoint) puzzle[start[0]][start[1]] = -1;
+            else puzzle[start[0]][start[1]] = color * mapping.length + 4;
+            if (puzzle[nr][nc] === color * mapping.length + i) puzzle[nr][nc] = -1;
             loop(idx + 1);
         }, 10);
         // if (solve(puzzle, endpoints, i)) return true
@@ -186,54 +166,10 @@ function solve(puzzle, endpoints, prev = -1) {
 }
 
 function build(endpoints, n, m) {
-    const puzzle = Array.from({ length: n }, () => Array(m).fill(5));
+    const puzzle = Array.from({ length: n }, () => Array(m).fill(-1));
     endpoints.forEach(([s, e, color]) => {
         puzzle[s[0]][s[1]] = color * mapping.length + 4;
         puzzle[e[0]][e[1]] = color * mapping.length + 4;
     });
     return puzzle;
-}
-
-function readInput() {
-    const board = [
-        "5........",
-        ".......2.",
-        ".........",
-        ".6......3",
-        "...5..6..",
-        ".7.0.....",
-        "...4..7..",
-        "2.4.1....",
-        "0.1..3..."
-    ];
-    // const board = [
-    //     "3....40.1.",
-    //     "..2.......",
-    //     "..........",
-    //     "..........",
-    //     "..........",
-    //     ".04.1.....",
-    //     "...3......",
-    //     ".......2..",
-    //     "..........",
-    //     ".........."
-    // ];
-    const endpointsDict = {};
-    const n = board.length;
-    const m = board[0].length;
-    for (let i = 0; i < n; i++) {
-        for (let j = 0; j < m; j++) {
-            const ch = board[i][j];
-            if (ch === '.') continue;
-            endpointsDict[ch] = endpointsDict[ch] || [];
-            endpointsDict[ch].push([i, j]);
-        }
-    }
-    const endpoints = [];
-    for (const color in endpointsDict) {
-        const coords = endpointsDict[color];
-        if (coords.length !== 2) throw new Error(`Invalid input: ${color} has ${coords.length} endpoints`);
-        endpoints.push([coords[0], coords[1], parseInt(color, 10)]);
-    }
-    return {endpoints, n, m};
 }

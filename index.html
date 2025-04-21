@@ -14,11 +14,34 @@
             <tr v-for="(row, i) in puzzle" :key="i">
                 <td v-for="(cell, j) in row" :key="j" @click="toggleCell(i, j)">
                     <div><div>
+                        <div :class="cellEndpoint(cell)"></div>
                         <div :class="cellClass(cell)"></div>
                     </div></div>
                 </td>
             </tr>
         </table>
+        <br><br>
+        <fieldset id="controls">
+            <legend>Controls</legend>
+            <fieldset>
+                <legend>Board Size</legend>
+                <input type="number" id="rows" v-model="rows" min="1" max="20"> x
+                <input type="number" id="cols" v-model="cols" min="1" max="20">
+            </fieldset>
+            <fieldset>
+                <legend>Algorithm</legend>
+                <input type="radio" id="pather" name="mode" value="pather" v-model="mode" checked>
+                <label for="pather">Pather</label>
+                <br>
+                <input type="radio" id="SAT" name="mode" value="SAT" v-model="mode">
+                <label for="SAT">SAT</label>
+            </fieldset>
+            <div>
+                <button id="solve" @click="solveBoard()" class="b">Solve</button>
+                <button id="reset" @click="reset()" class="a">Reset Board</button>
+                <button id="clear" @click="clear()" class="c">Apply Settings</button>
+            </div>
+        </fieldset>
         <script src="solve.js"></script>
         <script src="app.js"></script
     </body>
