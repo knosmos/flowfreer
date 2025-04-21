@@ -24,9 +24,12 @@ let table = new Vue({
     el: '#table',
     data: {
         puzzle: [],
+        original: [],
         endpoints: [],
         n: 0,
         m: 0,
+        num_placed: 0,
+        last_placed: 0,
     },
     methods: {
         cellClass(cell) {
@@ -43,17 +46,87 @@ let table = new Vue({
             return `circle ${col}`;
         },
         toggleCell(i, j) {
-            this.puzzle[i][j] = this.puzzle[i][j] === 1 ? 0 : 1;
-            console.log(`Cell (${i}, ${j}) toggled to ${this.puzzle[i][j]}`);
+            if (this.puzzle[i][j] === -1) {
+                this.puzzle[i][j] = Math.floor(this.num_placed / 2) * mapping.length + 4;
+                this.num_placed++;
+                if (this.num_placed % 2 === 0) {
+                    this.endpoints.push([last_placed, [i, j], Math.floor((this.num_placed - 1) / 2)]);
+                }
+                last_placed = [i, j];
+            }
             this.$forceUpdate();
         }
     }
 });
 
+function readInput() {
+    const board = [
+        "5........",
+        ".......2.",
+        ".........",
+        ".6......3",
+        "...5..6..",
+        ".7.0.....",
+        "...4..7..",
+        "2.4.1....",
+        "0.1..3..."
+    ];
+    // const board = [
+    //     "3....40.1.",
+    //     "..2.......",
+    //     "..........",
+    //     "..........",
+    //     "..........",
+    //     ".04.1.....",
+    //     "...3......",
+    //     ".......2..",
+    //     "..........",
+    //     ".........."
+    // ];
+    const endpointsDict = {};
+    const n = board.length;
+    const m = board[0].length;
+    for (let i = 0; i < n; i++) {
+        for (let j = 0; j < m; j++) {
+            const ch = board[i][j];
+            if (ch === '.') continue;
+            endpointsDict[ch] = endpointsDict[ch] || [];
+            endpointsDict[ch].push([i, j]);
+        }
+    }
+    const endpoints = [];
+    for (const color in endpointsDict) {
+        const coords = endpointsDict[color];
+        if (coords.length !== 2) throw new Error(`Invalid input: ${color} has ${coords.length} endpoints`);
+        endpoints.push([coords[0], coords[1], parseInt(color, 10)]);
+    }
+    return {endpoints, n, m};
+}
+
+function clearBoard() {
+    let rows = parseInt(document.getElementById('rows').value); // will figure out vue later
+    let cols = parseInt(document.getElementById('cols').value);
+    table.puzzle = Array.from({ length: rows }, () => new Array(cols).fill(-1));
+    table.endpoints = [];
+    table.num_placed = 0;
+    table.original = structuredClone(table.puzzle);
+}
+
+function solveBoard() {
+    table.original = structuredClone(table.puzzle);
+    solve(table.puzzle, table.endpoints, 0);
+}
+
+function resetBoard() {
+    table.puzzle = structuredClone(table.original);
+    table.$forceUpdate();
+}
+
 let input = readInput();
 table.puzzle = build(input.endpoints, input.n, input.m);
+table.original = structuredClone(table.puzzle);
 table.endpoints = input.endpoints;
 table.n = input.n;
 table.m = input.m;
-solve(table.puzzle, table.endpoints, 0);
-table.$forceUpdate();
+table.num_placed = input.endpoints.length * 2;
+solveBoard();

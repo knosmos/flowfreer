@@ -20,28 +20,31 @@
                 </td>
             </tr>
         </table>
+        <p>Click grid to add endpoints.</p>
         <br><br>
-        <fieldset id="controls">
+        <fieldset>
             <legend>Controls</legend>
             <fieldset>
                 <legend>Board Size</legend>
-                <input type="number" id="rows" v-model="rows" min="1" max="20"> x
-                <input type="number" id="cols" v-model="cols" min="1" max="20">
+                <input type="number" id="rows" v-model="rows_num" min="1" max="20" value="9"> x
+                <input type="number" id="cols" v-model="cols_num" min="1" max="20" value="9">
             </fieldset>
             <fieldset>
                 <legend>Algorithm</legend>
                 <input type="radio" id="pather" name="mode" value="pather" v-model="mode" checked>
-                <label for="pather">Pather</label>
+                <label for="pather">Heuristic Pathing</label>
                 <br>
                 <input type="radio" id="SAT" name="mode" value="SAT" v-model="mode">
-                <label for="SAT">SAT</label>
+                <label for="SAT">SAT (oops this doesn't work yet)</label>
             </fieldset>
             <div>
-                <button id="solve" @click="solveBoard()" class="b">Solve</button>
-                <button id="reset" @click="reset()" class="a">Reset Board</button>
-                <button id="clear" @click="clear()" class="c">Apply Settings</button>
+                <button id="solve" onclick="solveBoard()" class="b">Solve</button>
+                <button id="reset" onclick="resetBoard()" class="c">Reset Board</button>
+                <button id="clear" onclick="clearBoard()" class="a">Clear Board</button>
             </div>
         </fieldset>
+        <br><br>
+        <p>jieruei chang @ knosmos [<a href="https://github.com/knosmos/flowfreer">source code</a>]</p>
         <script src="solve.js"></script>
         <script src="app.js"></script
     </body>
