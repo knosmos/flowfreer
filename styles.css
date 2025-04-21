@@ -1,0 +1,127 @@
+@import url('https://fonts.googleapis.com/css2?family=Lexend:wght@400&display=swap');
+
+html, body {
+    margin: 0;
+    padding: 0;
+    font-family: Lexend, Arial, sans-serif;
+    background-color: rgb(17, 17, 17);
+}
+
+body {
+    padding-left: 30%;
+    padding-right: 30%;
+}
+
+h1 {
+    text-align: center;
+    font-size: 40pt;
+}
+
+h1 > .a {
+    color: rgb(201, 8, 8);
+}
+h1 > .b {
+    color: rgb(18, 131, 18);
+}
+h1 > .c {
+    color: rgb(45, 79, 234);
+}
+h1 > .d {
+    color: rgb(223, 211, 0);
+}
+h1 > .e {
+    color: rgb(255, 119, 0);
+}
+
+div > .a {
+    background-color: rgb(201, 8, 8);
+}
+div > .b {
+    background-color: rgb(18, 131, 18);
+}
+div > .c {
+    background-color: rgb(45, 79, 234);
+}
+div > .d {
+    background-color: rgb(223, 211, 0);
+}
+div > .e {
+    background-color: rgb(255, 119, 0);
+}
+div > .f {
+    background-color: rgb(255, 255, 255);
+}
+div > .g {
+    background-color: rgb(0, 199, 202);
+}
+div > .h {
+    background-color: rgb(131, 14, 146);
+}
+div > .i {
+    background-color: rgb(2, 227, 137);
+}
+div > .j {
+    background-color: rgb(94, 0, 86);
+}
+div > .k {
+    background-color: rgb(220, 101, 249);
+}
+
+table {
+    border-collapse: collapse;
+    width: 100%;
+}
+
+td {
+    border: 1px solid rgb(60, 60, 60);
+    text-align: center;
+    height: 0;
+    width: 10%;
+}
+
+td > div {
+    position: relative;
+    width: 100%;
+    height: 0;
+    padding-bottom: 100%;
+}
+
+td > div > div {
+    width: 100%;
+    height: 100%;
+}
+
+.circle {
+    position: absolute;
+    top: 10%;
+    left: 10%;
+    width: 80%;
+    height: 80%;
+    border-radius: 50%;
+}
+
+.link {
+    position: absolute;
+    top: 40%;
+    left: 40%;
+    width: 120%;
+    height: 20%;
+    transform-origin: 10% 50%;
+    border-radius: 10px;
+}
+
+.lt {
+    transform: rotate(180deg);
+}
+
+.rt {
+    transform: rotate(0deg);
+}
+
+.up {
+    transform: rotate(-90deg);
+}
+
+.dn {
+    transform: rotate(90deg);
+}

@@ -1,0 +1,25 @@
+<!DOCTYPE html>
+<html>
+    <head>
+        <meta charset="UTF-8">
+        <meta name="viewport" content="width=device-width, initial-scale=1.0">
+        <title>flow freer</title>
+        <link rel="stylesheet" href="styles.css">
+        <script src="https://cdn.jsdelivr.net/npm/vue/dist/vue.min.js"></script>
+    </head>
+    <body>
+        <h1 class="rainbow"><span class="a">f</span><span class="b">l</span><span class="c">o</span><span class="d">w </span><span class="e">f</span><span class="a">r</span><span class="b">e</span><span class="c">e</span><span class="d">r</span>
+        </h1>
+        <table id="table">
+            <tr v-for="(row, i) in puzzle" :key="i">
+                <td v-for="(cell, j) in row" :key="j" @click="toggleCell(i, j)">
+                    <div><div>
+                        <div :class="cellClass(cell)"></div>
+                    </div></div>
+                </td>
+            </tr>
+        </table>
+        <script src="solve.js"></script>
+        <script src="app.js"></script
+    </body>
+</html>
