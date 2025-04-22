@@ -161,6 +161,11 @@ button {
     font-size: 16px;
     font-family: Lexend, Arial, sans-serif;
     box-sizing: border-box;
+    margin-right: 5px;
+}
+
+button:hover {
+    filter: brightness(1.5);
 }
 
 input[type="number"] {
@@ -172,6 +177,7 @@ input[type="number"] {
     font-size: 16px;
     font-family: Lexend, Arial, sans-serif;
     box-sizing: border-box;
+    text-align: center;
 }
 
 input[type="file"] {
@@ -182,6 +188,7 @@ input[type="file"] {
     font-size: 16px;
     font-family: Lexend, Arial, sans-serif;
     box-sizing: border-box;
+    width: 100%;
 }
 
 input[type="file"]::-webkit-file-upload-button {
@@ -194,6 +201,10 @@ input[type="file"]::-webkit-file-upload-button {
     font-size: 16px;
     font-family: Lexend, Arial, sans-serif;
     box-sizing: border-box;
+}
+
+input[type="file"]::-webkit-file-upload-button:hover {
+    filter: brightness(1.5);
 }
 
 canvas {
