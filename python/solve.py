@@ -388,28 +388,29 @@ def read_input(fname):
     return endpoints, n, m
 
 
-# endpoints = [((0, 0), (1, 1), 0), ((0, 1), (2, 0), 1)]
-# endpoints = [
-#     [(0, 0), (4, 1), 0],
-#     [(0, 2), (3, 1), 1],
-#     [(0, 4), (3, 3), 2],
-#     [(1, 2), (4, 2), 3],
-#     [(1, 4), (4, 3), 4]
-# ]
+if __name__ == "__main__":
+    # endpoints = [((0, 0), (1, 1), 0), ((0, 1), (2, 0), 1)]
+    # endpoints = [
+    #     [(0, 0), (4, 1), 0],
+    #     [(0, 2), (3, 1), 1],
+    #     [(0, 4), (3, 3), 2],
+    #     [(1, 2), (4, 2), 3],
+    #     [(1, 4), (4, 3), 4]
+    # ]
 
-ctr = 0
+    ctr = 0
 
-endpoints = [
-    [(4, 4), (5, 7), 0],
-    [(5, 2), (6, 7), 1],
-    [(6, 3), (1, 6), 2],
-    [(4, 2), (6, 6), 3],
-]
+    endpoints = [
+        [(4, 4), (5, 7), 0],
+        [(5, 2), (6, 7), 1],
+        [(6, 3), (1, 6), 2],
+        [(4, 2), (6, 6), 3],
+    ]
 
-puzzle = build(endpoints, 8, 8)
-endpoints, n, m = read_input("input3.txt")
-puzzle = build(endpoints, n, m)
+    puzzle = build(endpoints, 8, 8)
+    endpoints, n, m = read_input("input3.txt")
+    puzzle = build(endpoints, n, m)
 
-clear()
-render(puzzle)
-solve(puzzle, endpoints)
+    clear()
+    render(puzzle)
+    solve(puzzle, endpoints)
