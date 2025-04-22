@@ -335,7 +335,10 @@ def empty_test3(puzzle, endpoints):
 def clear():
     os.system("cls" if os.name == "nt" else "clear")
 
+
 ctr = 0
+
+
 def render(puzzle):
     # clear()
     global ctr

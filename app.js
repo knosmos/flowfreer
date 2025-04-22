@@ -1,5 +1,5 @@
 const mapping = ['link dn', 'link up', 'link rt', 'link lt', 'circle', 'link dn', 'link up', 'link rt', 'link lt']; // mod 7
-const colors = ['a', 'b', 'c', 'd', 'e', 'f', 'g', 'h', 'i']; // red, green, yellow, blue, magenta, cyan, white, grey
+const colors = ['a', 'b', 'c', 'd', 'e', 'f', 'g', 'h', 'i', 'j', 'k', 'l', 'm', 'n']; // red, green, yellow, blue, magenta, cyan, white, grey
 let ctr = 0;
 
 function render(puzzle) {

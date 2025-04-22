@@ -74,6 +74,15 @@ div > .j {
 div > .k {
     background-color: rgb(220, 101, 249);
 }
+div > .l {
+    background-color: rgb(47, 113, 213);
+}
+div > .m {
+    background-color: rgb(50, 196, 140);
+}
+div > .n {
+    background-color: rgb(115, 115, 115);
+}
 
 table {
     border-collapse: collapse;
