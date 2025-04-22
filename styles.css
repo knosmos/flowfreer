@@ -210,3 +210,8 @@ input[type="file"]::-webkit-file-upload-button:hover {
 canvas {
     display: none;
 }
+
+a {
+    color: rgb(125, 78, 255);
+    text-decoration: none;
+}

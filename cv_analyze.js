@@ -2,16 +2,19 @@ document.getElementById('imgInput').addEventListener('change', function (e) {
     let file = e.target.files[0];
     let img = new Image();
     img.onload = () => {
+        // load image into canvas for opencv processing
         let canvas = document.getElementById('canvasOutput');
         canvas.width = img.width;
         canvas.height = img.height;
         let ctx = canvas.getContext('2d');
         ctx.drawImage(img, 0, 0);
-
         let src = cv.imread(canvas);
+
         let analysis = analyzeScreenshot(src);
         console.log("Endpoints:", analysis.endpoints);
         console.log("Grid size:", analysis.n, analysis.m);
+
+        // set puzzle data
         table.puzzle = build(analysis.endpoints, analysis.n, analysis.m);
         table.endpoints = analysis.endpoints;
         table.n = analysis.n;
@@ -23,6 +26,7 @@ document.getElementById('imgInput').addEventListener('change', function (e) {
 });
 
 function analyzeScreenshot(image) {
+    // crop to main grid
     let gray = new cv.Mat();
     cv.cvtColor(image, gray, cv.COLOR_RGBA2GRAY);
 
@@ -45,6 +49,7 @@ function analyzeScreenshot(image) {
     let aspectRatio = cropped.rows / cropped.cols;
     cv.resize(cropped, cropped, new cv.Size(600, parseInt(600 * aspectRatio)));
 
+    // detect vertical grid lines
     let croppedGray = new cv.Mat();
     cv.cvtColor(cropped, croppedGray, cv.COLOR_RGBA2GRAY);
     let thresh = new cv.Mat();
@@ -57,6 +62,7 @@ function analyzeScreenshot(image) {
     let lines = new cv.Mat();
     cv.HoughLinesP(sobelX, lines, 1, Math.PI / 60, 100, 100, 10);
 
+    // calculate grid size
     let xPos = [];
     for (let i = 0; i < lines.rows; i++) {
         let pt = lines.intPtr(i);
@@ -75,6 +81,7 @@ function analyzeScreenshot(image) {
     let gridSize = Math.round(600 / dist);
     console.log("Grid size:", gridSize);
 
+    // detect color points
     let points = [];
     let step = 600 / gridSize;
     for (let i = 0; i < gridSize; i++) {
@@ -89,6 +96,7 @@ function analyzeScreenshot(image) {
     }
     console.log(points.length + " points found");
 
+    // matchmaker
     let endpoints = [];
     for (let i = 0; i < points.length; i++) {
         let best = null;

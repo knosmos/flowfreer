@@ -3,6 +3,7 @@ function getNeighbors([r, c]) {
 }
 
 function dfsTest(puzzle, endpoints) {
+    // test if all endpoints have valid paths to each other
     for (const [start, end] of endpoints) {
         const stack = [start.slice()];
         const visited = new Set();
@@ -29,6 +30,7 @@ function dfsTest(puzzle, endpoints) {
 }
 
 function emptyTest3(puzzle, endpoints) {
+    // test if any empty cell has no way to be filled
     const viable = new Set();
     for (const [start, end] of endpoints) {
         const reach = pts => {
@@ -159,7 +161,6 @@ function solve(puzzle, endpoints, prev = -1) {
             if (puzzle[nr][nc] === color * mapping.length + i) puzzle[nr][nc] = -1;
             loop(idx + 1);
         }, 10);
-        // if (solve(puzzle, endpoints, i)) return true
     }
     loop(0);
     return false;
