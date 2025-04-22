@@ -335,7 +335,7 @@ def empty_test3(puzzle, endpoints):
 def clear():
     os.system("cls" if os.name == "nt" else "clear")
 
-
+ctr = 0
 def render(puzzle):
     # clear()
     global ctr
@@ -397,9 +397,6 @@ if __name__ == "__main__":
     #     [(1, 2), (4, 2), 3],
     #     [(1, 4), (4, 3), 4]
     # ]
-
-    ctr = 0
-
     endpoints = [
         [(4, 4), (5, 7), 0],
         [(5, 2), (6, 7), 1],

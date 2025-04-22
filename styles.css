@@ -164,3 +164,29 @@ input[type="number"] {
     font-family: Lexend, Arial, sans-serif;
     box-sizing: border-box;
 }
+
+input[type="file"] {
+    color: rgb(183, 183, 183);
+    background-color: rgb(17, 17, 17);
+    padding: 5px;
+    border-radius: 5px;
+    font-size: 16px;
+    font-family: Lexend, Arial, sans-serif;
+    box-sizing: border-box;
+}
+
+input[type="file"]::-webkit-file-upload-button {
+    background-color: rgb(167, 45, 181);
+    color: rgb(183, 183, 183);
+    border: none;
+    padding: 5px 10px;
+    border-radius: 5px;
+    cursor: pointer;
+    font-size: 16px;
+    font-family: Lexend, Arial, sans-serif;
+    box-sizing: border-box;
+}
+
+canvas {
+    display: none;
+}
