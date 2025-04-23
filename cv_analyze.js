@@ -15,7 +15,9 @@ document.getElementById('imgInput').addEventListener('change', function (e) {
         console.log("Grid size:", analysis.n, analysis.m);
 
         // set puzzle data
+        resetBoard();
         table.puzzle = build(analysis.endpoints, analysis.n, analysis.m);
+        table.original = structuredClone(table.puzzle);
         table.endpoints = analysis.endpoints;
         table.n = analysis.n;
         table.m = analysis.m;
