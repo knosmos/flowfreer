@@ -71,18 +71,6 @@ function readInput() {
         "2.4.1....",
         "0.1..3..."
     ];
-    // const board = [
-    //     "3....40.1.",
-    //     "..2.......",
-    //     "..........",
-    //     "..........",
-    //     "..........",
-    //     ".04.1.....",
-    //     "...3......",
-    //     ".......2..",
-    //     "..........",
-    //     ".........."
-    // ];
     const endpointsDict = {};
     const n = board.length;
     const m = board[0].length;
@@ -112,14 +100,24 @@ function clearBoard() {
     table.original = structuredClone(table.puzzle);
 }
 
+let board_routed = false; // if board has been solved or is currently being solved
 function solveBoard() {
-    table.original = structuredClone(table.puzzle);
-    solve(table.puzzle, table.endpoints, 0);
+    if (!board_routed) {
+        board_routed = true;
+        table.original = structuredClone(table.puzzle);
+        solve(table.puzzle, table.endpoints, 0);
+    }
 }
 
 function resetBoard() {
-    table.puzzle = structuredClone(table.original);
-    table.$forceUpdate();
+    if (board_routed) {
+        for (let i = 0; i < loop_handles.length; i++) {
+            clearTimeout(loop_handles[i]);
+        }
+        table.puzzle = structuredClone(table.original);
+        table.$forceUpdate();
+        board_routed = false;
+    }
 }
 
 let input = readInput();

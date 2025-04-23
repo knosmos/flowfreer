@@ -76,6 +76,7 @@ function emptyTest3(puzzle, endpoints) {
     return true;
 }
 
+let loop_handles = [];
 function solve(puzzle, endpoints, prev = -1) {
     let mostConstrained = 0;
     while (mostConstrained < endpoints.length &&
@@ -152,7 +153,7 @@ function solve(puzzle, endpoints, prev = -1) {
         if (puzzle[nr][nc] === -1) puzzle[nr][nc] = color * mapping.length + i;
 
         endpoints[mostConstrained] = [nxt, end, color];
-        setTimeout(() => {
+        loop_handles.push(setTimeout(() => {
             if (solve(puzzle, endpoints, i)) return true;
             endpoints[mostConstrained] = [start, end, color];
 
@@ -160,7 +161,7 @@ function solve(puzzle, endpoints, prev = -1) {
             else puzzle[start[0]][start[1]] = color * mapping.length + 4;
             if (puzzle[nr][nc] === color * mapping.length + i) puzzle[nr][nc] = -1;
             loop(idx + 1);
-        }, 10);
+        }, 10));
     }
     loop(0);
     return false;
