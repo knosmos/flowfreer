@@ -5,9 +5,14 @@
         <script src="lib/opencv.js"></script>
     </head>
     <body>
+        <h1>Grid Analyzer</h1>
         <input type="file" id="imgInput">
         <br>
-        <canvas id="canvasOutput"></canvas>
+        <h2>Sobel Output</h2>
+        <canvas id="sobel" style="border:1px solid #000000; display:block !important"></canvas>
+        <h2>Grid Detection Output</h2>
+        <canvas id="canvasOutput" style="border:1px solid #000000; display:block !important"></canvas>
+        <h3>Grid Size: <span id="gridSize"></span></h3>
         <script>
             document.getElementById('imgInput').addEventListener('change', function (e) {
                 let file = e.target.files[0];
@@ -58,6 +63,8 @@
                 cv.Sobel(thresh, sobelX, cv.CV_64F, 1, 0, 5);
                 sobelX.convertTo(sobelX, cv.CV_8U);
 
+                cv.imshow("sobel", sobelX);
+
                 let lines = new cv.Mat();
                 cv.HoughLinesP(sobelX, lines, 1, Math.PI / 60, 100, 100, 10);
 
@@ -78,6 +85,7 @@
                 dist /= numLines;
                 let gridSize = Math.round(600 / dist);
                 console.log("Grid size:", gridSize);
+                document.getElementById('gridSize').innerText = `${gridSize} x ${Math.round(gridSize * aspectRatio)}`;
 
                 let points = [];
                 let step = 600 / gridSize;
