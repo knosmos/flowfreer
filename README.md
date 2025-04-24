@@ -1,4 +1,6 @@
 # flow freer
+![flow freer header image](/static/flowfree.png)
+
 Solves Flow Free puzzles using SAT and dfs/recursive backtracking; also includes computer vision to extract boards. To my knowledge, this is the first browser-based Flow solver ([play it online!](https://knosmos.github.io/flowfreer/)) Using SAT, it's also incredibly fast: it solves boards on the order of a few hundred milliseconds.
 
 ## Why?

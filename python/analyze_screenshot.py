@@ -1,5 +1,5 @@
 import cv2
-from solve import *
+from solve_sat import *
 from rich import print
 
 
@@ -87,10 +87,7 @@ def analyze_screenshot(image):
 
 
 if __name__ == "__main__":
-    img = cv2.imread("screenshot.jpg")
+    img = cv2.imread("test_inputs/screenshot.jpg")
     endpoints, n, m = analyze_screenshot(img)
-    puzzle = build(endpoints, n, m)
-
-    clear()
+    puzzle = solve(endpoints, n, m)
     render(puzzle)
-    solve(puzzle, endpoints)

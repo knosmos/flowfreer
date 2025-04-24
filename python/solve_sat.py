@@ -190,6 +190,6 @@ if __name__ == "__main__":
     # ]
     # n = 8
     # m = 8
-    endpoints, n, m = read_input("input2.txt")
+    endpoints, n, m = read_input("test_inputs/input.txt")
     sol = solve(endpoints, n, m)
     render(sol)

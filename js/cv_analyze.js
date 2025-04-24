@@ -21,6 +21,8 @@ document.getElementById('imgInput').addEventListener('change', function (e) {
         table.endpoints = analysis.endpoints;
         table.n = analysis.n;
         table.m = analysis.m;
+        document.getElementById('rows').value = analysis.n;
+        document.getElementById('cols').value = analysis.m;
         table.num_placed = analysis.endpoints.length * 2;
         src.delete();
     };
