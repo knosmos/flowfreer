@@ -167,6 +167,10 @@ function solveSAT(clauses) {
     try {
         let result = solve_string(clausesStr, clausesStrLen);
         console.log("SAT solver result:", result);
+        if (result[0] == 'U') {
+            alert("No solution found.");
+            return [];
+        }
         let vals = result.split(" ").slice(1).map(Number).filter(x => x > 0);
         console.log("Parsed lines:", vals);
         return vals;
