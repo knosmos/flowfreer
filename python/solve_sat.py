@@ -1,12 +1,27 @@
 import pycosat
 
+ANSI_START = "\x1b[1;"
+ANSI_END = "\x1b[0m"
+colors = [
+    41,
+    42,
+    43,
+    44,
+    45,
+    46,
+    47,
+    48,
+]
 def render(sat):
     board = [[0] * m for _ in range(n)]
     for i, j, k in sat:
         board[i][j] = k
     print("✧˖° FLOW FREER ✧˖°")
     for row in board:
-        print("".join(str(cell) for cell in row))
+        print("".join(
+            f"{ANSI_START}{colors[cell]}m  {ANSI_END}"
+            for cell in row
+        ))
 
 def solve(endpoints, n, m):
     clauses = []
@@ -38,45 +53,45 @@ def solve(endpoints, n, m):
         endpoint_mapping[(e[0], e[1])] = c
     # each cell has exactly one color
     # endpoint cells have their designated color
-    print("endpoint_mapping", endpoint_mapping)
-    print("SETTING CELL COLORS")
+    # print("endpoint_mapping", endpoint_mapping)
+    # print("SETTING CELL COLORS")
     for i in range(n):
         for j in range(m):
-            print("i,j", i, j)
+            # print("i,j", i, j)
             if (i, j) in endpoint_mapping:
                 c = endpoint_mapping[(i, j)]
-                print("endpoint", i, j, c)
+                # print("endpoint", i, j, c)
                 clauses.append([encode(i, j, c)])
-                print([encode(i, j, c)])
+                # print([encode(i, j, c)])
                 for k in range(num_colors):
                     if k != c:
                         clauses.append([-encode(i, j, k)])
-                        print([-encode(i, j, k)])
+                        # print([-encode(i, j, k)])
             else:
                 clauses.append([encode(i, j, k) for k in range(num_colors)])
-                print([encode(i, j, k) for k in range(num_colors)])
+                # print([encode(i, j, k) for k in range(num_colors)])
                 for k in range(num_colors):
                     for k2 in range(k + 1, num_colors):
                         clauses.append([-encode(i, j, k), -encode(i, j, k2)])
-                        print([-encode(i, j, k), -encode(i, j, k2)])
+                        # print([-encode(i, j, k), -encode(i, j, k2)])
     # connecting cells have exactly two neighbors with the same color
     # endpoint cells have exactly one neighbor with the same color
-    print("CONNECTING CELLS")
+    # print("CONNECTING CELLS")
     for i in range(n):
         for j in range(m):
-            print("i,j", i, j)
+            # print("i,j", i, j)
             neighbors = get_neighbors(i, j)
             if (i, j) in endpoint_mapping:
                 # endpoint cell
                 c = endpoint_mapping[(i, j)]
                 clauses.append([encode(n1, n2, c) for n1, n2 in neighbors])
-                print([encode(n1, n2, c) for n1, n2 in neighbors])
+                # print([encode(n1, n2, c) for n1, n2 in neighbors])
                 for n1 in range(len(neighbors)):
                     for n2 in range(n1 + 1, len(neighbors)):
                         ni1, nj1 = neighbors[n1]
                         ni2, nj2 = neighbors[n2]
                         clauses.append([-encode(ni1, nj1, c), -encode(ni2, nj2, c)])
-                        print([-encode(ni1, nj1, c), -encode(ni2, nj2, c)])
+                        # print([-encode(ni1, nj1, c), -encode(ni2, nj2, c)])
             else:
                 # normal cell
                 for k in range(num_colors):
@@ -105,13 +120,13 @@ def solve(endpoints, n, m):
                                     clauses.append([-encode(i, j, k), -encode(ni1, nj1, k), -encode(ni2, nj2, k), -encode(ni3, nj3, k)])
                                     clauses.append([-encode(i, j, k), encode(ni1, nj1, k), encode(ni2, nj2, k), encode(ni3, nj3, k)])
     sol_raw = pycosat.solve(clauses)
-    print("sol_raw", sol_raw)
+    # print("sol_raw", sol_raw)
     sol_decoded = []
     for x in sol_raw:
         if x > 0:
             i, j, k = decode(x)
             sol_decoded.append((i, j, k))
-    print("sol_decoded", sol_decoded)
+    # print("sol_decoded", sol_decoded)
     return sol_decoded
     
 def read_input(fname):
