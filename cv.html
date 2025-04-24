@@ -3,16 +3,49 @@
     <head>
         <title>Grid Analyzer Testing Page</title>
         <script src="lib/opencv.js"></script>
+        <meta name="viewport" content="width=device-width, initial-scale=1.0">
     </head>
     <body>
-        <h1>Grid Analyzer</h1>
+        <style>
+            body {
+                font-family: Arial, sans-serif;
+                background-color: #f4f4f4;
+                margin: 0;
+                padding: 20px;
+            }
+            h1, h2, h3 {
+                color: #333;
+            }
+            input[type="file"] {
+                margin-bottom: 20px;
+            }
+            #canvasContainer {
+                display: grid;
+                grid-template-columns: repeat(auto-fill, minmax(400px, 1fr));
+                gap: 20px;
+            }
+            canvas {
+                width: 100%;
+            }
+        </style>
+        <h1>grid analyzer</h1>
         <input type="file" id="imgInput">
         <br>
-        <h2>Sobel Output</h2>
-        <canvas id="sobel" style="border:1px solid #000000; display:block !important"></canvas>
-        <h2>Grid Detection Output</h2>
-        <canvas id="canvasOutput" style="border:1px solid #000000; display:block !important"></canvas>
-        <h3>Grid Size: <span id="gridSize"></span></h3>
+        <div id="canvasContainer">
+            <div>
+                <h2>sobel output</h2>
+                <canvas id="sobel" style="border:1px solid #000000"></canvas>            
+            </div>
+            <div>
+                <h2>hough output</h2>
+                <canvas id="hough" style="border:1px solid #000000"></canvas>            
+            </div>
+            <div>
+                <h2>grid detection output</h2>
+                <canvas id="canvasOutput" style="border:1px solid #000000; display:block !important"></canvas>
+            </div>
+        </div>
+        <h3>grid size: <span id="gridSize"></span></h3>
         <script>
             document.getElementById('imgInput').addEventListener('change', function (e) {
                 let file = e.target.files[0];
@@ -68,12 +101,15 @@
                 let lines = new cv.Mat();
                 cv.HoughLinesP(sobelX, lines, 1, Math.PI / 60, 100, 100, 10);
 
+                let hough = new cv.Mat(cropped.rows, cropped.cols, cv.CV_8UC3, new cv.Scalar(0, 0, 0));
                 let xPos = [];
                 for (let i = 0; i < lines.rows; i++) {
                     let pt = lines.intPtr(i);
                     xPos.push(pt[0]);
+                    cv.line(hough, new cv.Point(pt[0], pt[1]), new cv.Point(pt[2], pt[3]), new cv.Scalar(255, 0, 0, 255), 2);
                 }
                 xPos.sort((a, b) => a - b);
+                cv.imshow("hough", hough);
 
                 let dist = 0, numLines = 0;
                 for (let i = 0; i < xPos.length - 1; i++) {
@@ -118,7 +154,7 @@
                         endpoints.push([points[i].slice(0, 2), best, endpoints.length]);
                         let pt1 = new cv.Point(points[i][1] * step + step / 2, points[i][0] * step + step / 2);
                         let pt2 = new cv.Point(best[1] * step + step / 2, best[0] * step + step / 2);
-                        cv.line(cropped, pt1, pt2, new cv.Scalar(255, 0, 0), 2);
+                        cv.line(cropped, pt1, pt2, new cv.Scalar(255, 0, 0, 255), 2);
                     } else {
                         console.log("No best match found for", points[i]);
                     }
