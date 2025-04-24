@@ -408,7 +408,7 @@ if __name__ == "__main__":
     ]
 
     puzzle = build(endpoints, 8, 8)
-    endpoints, n, m = read_input("input.txt")
+    endpoints, n, m = read_input("test_inputs/input.txt")
     puzzle = build(endpoints, n, m)
 
     clear()

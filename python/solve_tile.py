@@ -218,7 +218,7 @@ def read_input(fname):
 puzzle = build(endpoints, 8, 8)
 start = 0
 
-endpoints, n, m = read_input("input3.txt")
+endpoints, n, m = read_input("test_inputs/input3.txt")
 puzzle = build(endpoints, n, m)
 
 os.system("cls" if os.name == "nt" else "clear")
