@@ -1,4 +1,4 @@
-function solve(endpoints, n, m) {
+function solve_with_sat(endpoints, n, m) {
     const clauses = [];
     const numColors = endpoints.length;
 
@@ -35,12 +35,16 @@ function solve(endpoints, n, m) {
                 const c = endpointMapping[key];
                 clauses.push([encode(i, j, c)]);
                 for (let k = 0; k < numColors; k++) {
-                    if (k !== c) {
+                    if (k != c) {
                         clauses.push([-encode(i, j, k)]);
                     }
                 }
             } else {
-                clauses.push([...Array(numColors).keys()].map(k => encode(i, j, k)));
+                const allColors = [];
+                for (let k = 0; k < numColors; k++) {
+                    allColors.push(encode(i, j, k));
+                }
+                clauses.push(allColors);
                 for (let k = 0; k < numColors; k++) {
                     for (let k2 = k + 1; k2 < numColors; k2++) {
                         clauses.push([-encode(i, j, k), -encode(i, j, k2)]);
@@ -85,8 +89,18 @@ function solve(endpoints, n, m) {
                                     const [ni1, nj1] = neighbors[n1];
                                     const [ni2, nj2] = neighbors[n2];
                                     const [ni3, nj3] = neighbors[n3];
-                                    clauses.push([-encode(i, j, k), -encode(ni1, nj1, k), -encode(ni2, nj2, k), -encode(ni3, nj3, k)]);
-                                    clauses.push([-encode(i, j, k), encode(ni1, nj1, k), encode(ni2, nj2, k), encode(ni3, nj3, k)]);
+                                    clauses.push([
+                                        -encode(i, j, k),
+                                        -encode(ni1, nj1, k),
+                                        -encode(ni2, nj2, k),
+                                        -encode(ni3, nj3, k)
+                                    ]);
+                                    clauses.push([
+                                        -encode(i, j, k),
+                                        encode(ni1, nj1, k),
+                                        encode(ni2, nj2, k),
+                                        encode(ni3, nj3, k)
+                                    ]);
                                 }
                             }
                         }
@@ -95,27 +109,69 @@ function solve(endpoints, n, m) {
             }
         }
     }
+    console.log("Clauses:", clauses.length);
 
     const solRaw = solveSAT(clauses);
-    const solDecoded = [];
+    const colorBoard = Array.from({ length: n }, () => Array(m).fill(0));
     for (const x of solRaw) {
         if (x > 0) {
-            solDecoded.push(decode(x));
+            const [i, j, k] = decode(x);
+            colorBoard[i][j] = k;
         }
     }
-    return solDecoded;
+
+    const puzzle = Array.from({ length: n }, () => Array(m).fill(0));
+    for (const [start, end, c] of endpoints) {
+        let s = start.slice(); // Clone
+        puzzle[s[0]][s[1]] = c * mapping.length + 4;
+        const visited = new Set();
+        visited.add(`${s[0]},${s[1]}`);
+        while (s[0] !== end[0] || s[1] !== end[1]) {
+            const neighbors = [
+                [s[0] - 1, s[1]],
+                [s[0] + 1, s[1]],
+                [s[0], s[1] - 1],
+                [s[0], s[1] + 1]
+            ];
+            for (let i = 0; i < 4; i++) {
+                const nxt = neighbors[i];
+                if (
+                    nxt[0] >= 0 && nxt[0] < n &&
+                    nxt[1] >= 0 && nxt[1] < m &&
+                    colorBoard[nxt[0]][nxt[1]] === colorBoard[s[0]][s[1]] &&
+                    !visited.has(`${nxt[0]},${nxt[1]}`)
+                ) {
+                    visited.add(`${nxt[0]},${nxt[1]}`);
+                    s = nxt;
+                    if (s[0] === end[0] && s[1] === end[1]) {
+                        puzzle[s[0]][s[1]] = c * mapping.length + 4 + i + 1;
+                    } else {
+                        puzzle[s[0]][s[1]] = c * mapping.length + i;
+                    }
+                    break;
+                }
+            }
+        }
+    }
+
+    return puzzle;
 }
 
 function solveSAT(clauses) {
     // convert clauses to string format
-    let clausesStr = clauses.map(clause => clause.join(' ')).join('\n') + '\n0\n';
+    let clausesStr = clauses.map(clause => clause.join(' ') + ' 0').join('\n');
+    clausesStr = 'p cnf ' + (clauses.length * 2) + ' ' + clauses.length + '\n' + clausesStr;
+    console.log("SAT solver input:", clausesStr);
     let clausesStrLen = clausesStr.length;
-    let solve_string = Module.cwrap('solve_string', 'string', ['string', 'int']);
+    let solve_string = miniSatModule().cwrap('solve_string', 'string', ['string', 'int']);
     try {
         let result = solve_string(clausesStr, clausesStrLen);
         console.log("SAT solver result:", result);
+        let vals = result.split(" ").slice(1).map(Number).filter(x => x > 0);
+        console.log("Parsed lines:", vals);
+        return vals;
     } catch(e) {
         console.error("Error in solveSAT:", e);
         return null;
     }
-  }
+}

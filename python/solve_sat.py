@@ -1,5 +1,7 @@
 import pycosat
 
+mapping = {0: "v", 1: "^", 2: ">", 3: "<", 4: "*", 5: ".", 6: "#"}  # mod 7
+
 ANSI_START = "\x1b[1;"
 ANSI_END = "\x1b[0m"
 colors = [
@@ -12,16 +14,24 @@ colors = [
     47,
     48,
 ]
-def render(sat):
-    board = [[0] * m for _ in range(n)]
-    for i, j, k in sat:
-        board[i][j] = k
+
+def render(puzzle):
+    global ctr
     print("✧˖° FLOW FREER ✧˖°")
-    for row in board:
-        print("".join(
-            f"{ANSI_START}{colors[cell]}m  {ANSI_END}"
-            for cell in row
-        ))
+    print()
+    for row in puzzle:
+        print(
+            "".join(
+                [
+                    (
+                        f"{ANSI_START}{colors[i // 7]}m{mapping[i % 7]} {ANSI_END}"
+                        if i != 5
+                        else ". "
+                    )
+                    for i in row
+                ]
+            )
+        )
 
 def solve(endpoints, n, m):
     clauses = []
@@ -99,7 +109,7 @@ def solve(endpoints, n, m):
                     if len(neighbors) == 2:
                         clauses.append([-encode(i, j, k), encode(neighbors[0][0], neighbors[0][1], k)])
                         clauses.append([-encode(i, j, k), encode(neighbors[1][0], neighbors[1][1], k)])
-                    # in any groupu of two neighbors, at least one has color k
+                    # in any group of two neighbors, at least one has color k
                     # and at least one of the three neighbors does not has color k
                     if len(neighbors) == 3:
                         for n1 in range(len(neighbors)):
@@ -119,15 +129,38 @@ def solve(endpoints, n, m):
                                     ni3, nj3 = neighbors[n3]
                                     clauses.append([-encode(i, j, k), -encode(ni1, nj1, k), -encode(ni2, nj2, k), -encode(ni3, nj3, k)])
                                     clauses.append([-encode(i, j, k), encode(ni1, nj1, k), encode(ni2, nj2, k), encode(ni3, nj3, k)])
+    print(len(clauses), "clauses")
     sol_raw = pycosat.solve(clauses)
     # print("sol_raw", sol_raw)
-    sol_decoded = []
+    color_board = [[0] * m for _ in range(n)]
     for x in sol_raw:
         if x > 0:
             i, j, k = decode(x)
-            sol_decoded.append((i, j, k))
-    # print("sol_decoded", sol_decoded)
-    return sol_decoded
+            color_board[i][j] = k
+    
+    # convert to puzzle format used in original solver
+    puzzle = [[0] * m for _ in range(n)]
+    for s, e, c in endpoints:
+        puzzle[s[0]][s[1]] = c * 7 + 4
+        visited = set()
+        visited.add(s)
+        while s != e:
+            for i, nxt in enumerate([
+                (s[0] - 1, s[1]),
+                (s[0] + 1, s[1]),
+                (s[0], s[1] - 1),
+                (s[0], s[1] + 1),
+            ]):
+                if 0 <= nxt[0] < n and 0 <= nxt[1] < m:
+                    if color_board[nxt[0]][nxt[1]] == color_board[s[0]][s[1]] and nxt not in visited:
+                        visited.add(nxt)
+                        s = nxt
+                        if s == e:
+                            puzzle[s[0]][s[1]] = c * 7 + 4 # + i
+                        else:
+                            puzzle[s[0]][s[1]] = c * 7 + i
+                        break
+    return puzzle
     
 def read_input(fname):
     board = open(fname, "r").read().split("\n")
@@ -157,6 +190,6 @@ if __name__ == "__main__":
     # ]
     # n = 8
     # m = 8
-    endpoints, n, m = read_input("input.txt")
+    endpoints, n, m = read_input("input2.txt")
     sol = solve(endpoints, n, m)
     render(sol)

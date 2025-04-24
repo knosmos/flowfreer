@@ -105,7 +105,12 @@ function solveBoard() {
     if (!board_routed) {
         board_routed = true;
         table.original = structuredClone(table.puzzle);
-        solve(table.puzzle, table.endpoints, 0);
+        if (document.getElementById('SAT').checked) {
+            table.puzzle = solve_with_sat(table.endpoints, table.n, table.m);
+        }
+        else {
+            solve(table.puzzle, table.endpoints, 0);
+        }
     }
 }
 
@@ -127,4 +132,5 @@ table.endpoints = input.endpoints;
 table.n = input.n;
 table.m = input.m;
 table.num_placed = input.endpoints.length * 2;
-solveBoard();
+board_routed = true;
+solve(table.puzzle, table.endpoints, 0);

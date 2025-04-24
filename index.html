@@ -8,6 +8,7 @@
         <link rel="stylesheet" href="styles.css">
         <script src="https://cdn.jsdelivr.net/npm/vue/dist/vue.min.js"></script>
         <script src="opencv.js"></script>
+        <script src="minisat.js"></script>
     </head>
     <body>
         <h1 class="rainbow"><span class="a">f</span><span class="b">l</span><span class="c">o</span><span class="d">w </span><span class="e">f</span><span class="a">r</span><span class="b">e</span><span class="c">e</span><span class="d">r</span>
@@ -33,11 +34,11 @@
             </fieldset>
             <fieldset>
                 <legend>Algorithm</legend>
-                <input type="radio" id="pather" name="mode" value="pather" v-model="mode" checked>
-                <label for="pather">Heuristic Pathing</label>
+                <input type="radio" id="SAT" name="mode" value="SAT" v-model="mode" checked>
+                <label for="SAT">SAT</label>
                 <br>
-                <input type="radio" id="SAT" name="mode" value="SAT" v-model="mode">
-                <label for="SAT">SAT (oops this doesn't work yet)</label>
+                <input type="radio" id="pather" name="mode" value="pather" v-model="mode">
+                <label for="pather">Heuristic Pathing</label>
             </fieldset>
             <fieldset>
                 <legend>Upload Puzzle Screenshot</legend>
@@ -51,8 +52,10 @@
         </fieldset>
         <canvas id="canvasOutput"></canvas>
         <br><br>
-        <p>jieruei chang @ knosmos [<a href="https://github.com/knosmos/flowfreer">source code</a>]</p>
+        <p>jieruei chang @ knosmos [<a href="https://github.com/knosmos/flowfreer">source code</a>]<br>
+        built with [<a href="https://opencv.org/">opencv</a>] [<a href="http://minisat.se/">minisat</a>] [<a href="https://vuejs.org/">vue</a>]</p>
         <script src="solve.js"></script>
+        <script src="solve_sat.js"></script>
         <script src="app.js"></script>
         <script src="cv_analyze.js"></script>
     </body>
