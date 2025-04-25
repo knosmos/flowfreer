@@ -77,7 +77,7 @@ function emptyTest3(puzzle, endpoints) {
 }
 
 let loop_handles = [];
-function solve(puzzle, endpoints, prev = -1) {
+function solve_dfs(puzzle, endpoints, prev = -1) {
     let mostConstrained = 0;
     while (mostConstrained < endpoints.length &&
                  endpoints[mostConstrained][0].toString() === endpoints[mostConstrained][1].toString()) {
@@ -154,7 +154,7 @@ function solve(puzzle, endpoints, prev = -1) {
 
         endpoints[mostConstrained] = [nxt, end, color];
         loop_handles.push(setTimeout(() => {
-            if (solve(puzzle, endpoints, i)) return true;
+            if (solve_dfs(puzzle, endpoints, i)) return true;
             endpoints[mostConstrained] = [start, end, color];
 
             if (!origEndpoint) puzzle[start[0]][start[1]] = -1;

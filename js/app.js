@@ -106,10 +106,10 @@ function solveBoard() {
         board_routed = true;
         table.original = structuredClone(table.puzzle);
         if (document.getElementById('SAT').checked) {
-            table.puzzle = solve_with_sat(table.endpoints, table.n, table.m);
+            table.puzzle = solve_sat(table.endpoints, table.n, table.m);
         }
         else {
-            solve(table.puzzle, table.endpoints, 0);
+            solve_dfs(table.puzzle, table.endpoints, 0);
         }
     }
 }
@@ -122,7 +122,7 @@ function resetBoard() {
         table.puzzle = structuredClone(table.original);
         table.$forceUpdate();
         board_routed = false;
-    }
+    }   
 }
 
 let input = readInput();
@@ -133,4 +133,4 @@ table.n = input.n;
 table.m = input.m;
 table.num_placed = input.endpoints.length * 2;
 board_routed = true;
-solve(table.puzzle, table.endpoints, 0);
+solve_dfs(table.puzzle, table.endpoints, 0);

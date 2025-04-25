@@ -1,4 +1,4 @@
-function solve_with_sat(endpoints, n, m) {
+function solve_sat(endpoints, n, m) {
     const clauses = [];
     const numColors = endpoints.length;
 
@@ -111,7 +111,7 @@ function solve_with_sat(endpoints, n, m) {
     }
     console.log("Clauses:", clauses.length);
 
-    const solRaw = solveSAT(clauses);
+    const solRaw = run_sat_solver(clauses);
     const colorBoard = Array.from({ length: n }, () => Array(m).fill(0));
     for (const x of solRaw) {
         if (x > 0) {
@@ -157,7 +157,7 @@ function solve_with_sat(endpoints, n, m) {
     return puzzle;
 }
 
-function solveSAT(clauses) {
+function run_sat_solver(clauses) {
     // convert clauses to string format
     let clausesStr = clauses.map(clause => clause.join(' ') + ' 0').join('\n');
     clausesStr = 'p cnf ' + (clauses.length * 2) + ' ' + clauses.length + '\n' + clausesStr;

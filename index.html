@@ -109,12 +109,12 @@
             We also attempt some heuristics to speed up the search. For example, we try to fill in the most constrained colors first (i.e., colors with the fewest possible paths). In practice, this seems to give minimal benefit. If I wrote the solver to use a priority queue rather than pure BFS, it would likely be much faster.
             
             <h2>Computer Vision</h2>
-            I got annoyed with manually entering Flow boards, so I wrote a simple computer vision algorithm to extract puzzles from screenshots. Using OpenCV, it crops the main board (removing all the UI elements) using contour detection. It then runs Sobel-X edge detection and Hough Lines to find vertical grid lines that can extract the size of the grid. From here, it samples the colors of each cell and tries to match close colors together. The vision algorithm is built into the website; you can also <a href="https://knosmos.github.io/flowfreer/cv">run it standalone</a> to see some of its internal workings.
+            I got annoyed with manually entering Flow boards, so I wrote a simple computer vision algorithm to extract puzzles from screenshots. Using contour detection, it crops the main board to remove all extraneous UI elements. It then runs Sobel-X edge detection and Hough Lines to find vertical grid lines in order to extract the size of the grid. From here, it samples the colors of each cell and tries to match close colors together. The vision algorithm is built into the website; you can also <a href="https://knosmos.github.io/flowfreer/cv">run it standalone</a> to see some of its internal workings.
         </div>
 
         <br><br>
         <p>jieruei chang @ knosmos [<a href="https://github.com/knosmos/flowfreer">source code</a>]<br>
-        built with [<a href="https://opencv.org/">opencv</a>] [<a href="http://minisat.se/">minisat</a>] [<a href="https://vuejs.org/">vue</a>]</p>
+        built with [<a href="https://opencv.org/">opencv</a>] [<a href="http://minisat.se/">minisat</a>] [<a href="https://emscripten.org/">emscripten</a>] [<a href="https://vuejs.org/">vue</a>]</p>
         <script src="js/solve_dfs.js"></script>
         <script src="js/solve_sat.js"></script>
         <script src="js/app.js"></script>
